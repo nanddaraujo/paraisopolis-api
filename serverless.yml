@@ -1,0 +1,89 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: paraisopolis-api
+
+plugins:
+  - serverless-offline
+
+frameworkVersion: '3'
+
+provider:
+  name: aws 
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:PutItem
+        - dynamodb:DeleteItem
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+      Resource: arn:aws:dynamodb:us-east-1:431136028774:table/PARAISOPOLIS
+
+
+functions:
+  listarEstabelecimentos:
+    handler: handler.listarEstabelecimentos
+    events:
+      - http:
+          path: estabelecimentos
+          method: get
+
+  buscarEstabelecimentoPorId:
+    handler: handler.buscarEstabelecimentoPorId
+    events:
+      - http:
+          path: estabelecimentos/{id_estab}
+          method: get
+  
+  cadastrarEstabelecimento:
+    handler: handler.cadastrarEstabelecimento
+    events:
+      - http:
+          path: estabelecimentos
+          method: post
+
+  atualizarEstabelecimento:
+    handler: handler.atualizarEstabelecimento
+    events:
+      - http:
+          path: estabelecimentos/{id_estab}
+          method: put
+
+  excluirEstabelecimento:
+    handler: handler.excluirEstabelecimento
+    events:
+      - http:
+          path: estabelecimentos/{id_estab}
+          method: delete
+
+resources:
+  Resources:
+    EstabelecimentosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: PARAISOPOLIS
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
